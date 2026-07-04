@@ -1,0 +1,119 @@
+---
+import { Image } from "astro:assets";
+import Base from "./Base.astro";
+import EventStrip from "../components/EventStrip.astro";
+import avatar from "../assets/richard.jpg";
+
+export interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  pillar: "homelab" | "security" | "ai" | "performance";
+  postNumber: number;
+  status?: "resolved" | "ongoing" | "reference";
+  minutesToRead: number;
+  hero?: string;
+}
+
+const { title, description, pubDate, updatedDate, pillar, postNumber, status, minutesToRead, hero } =
+  Astro.props;
+---
+
+<Base
+  title={title}
+  description={description}
+  type="article"
+  pubDate={pubDate}
+  updatedDate={updatedDate}
+  image={hero}
+>
+  <article class="post">
+    <EventStrip
+      pillar={pillar}
+      postNumber={postNumber}
+      pubDate={pubDate}
+      minutesToRead={minutesToRead}
+      status={status}
+    />
+    <h1 class="post-title">{title}</h1>
+    <p class="byline">
+      <Image src={avatar} alt="" role="presentation" width={24} height={24} class="avatar-byline" />
+      Richard Carragher
+    </p>
+    {
+      updatedDate && (
+        <p class="updated">Updated {updatedDate.toISOString().slice(0, 10)}</p>
+      )
+    }
+    <div class="prose">
+      <slot />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .post {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+  .post-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
+    margin-top: 0.75rem;
+    color: var(--text);
+  }
+  .byline {
+    margin-top: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-dim);
+    font-size: 0.875rem;
+  }
+  .avatar-byline {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--hairline);
+  }
+  .updated {
+    margin-top: 0.25rem;
+    color: var(--text-dim);
+    font-size: 0.875rem;
+  }
+  .prose {
+    margin-top: 2rem;
+    font-family: var(--font-body);
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .prose :global(h2),
+  .prose :global(h3) {
+    font-family: var(--font-display);
+    color: var(--text);
+    margin-top: 2em;
+  }
+  .prose :global(a) {
+    color: var(--link);
+  }
+  .prose :global(code) {
+    font-family: var(--font-mono);
+    background: var(--surface);
+    padding: 0.1em 0.35em;
+    border-radius: 0.25em;
+  }
+  .prose :global(pre) {
+    background: var(--surface);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+  }
+  .prose :global(pre code) {
+    background: none;
+    padding: 0;
+  }
+</style>

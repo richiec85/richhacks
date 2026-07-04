@@ -1,0 +1,58 @@
+---
+export interface Props {
+  pillar: "homelab" | "security" | "ai" | "performance";
+  postNumber: number;
+  pubDate: Date;
+  minutesToRead: number;
+  status?: "resolved" | "ongoing" | "reference";
+}
+
+const { pillar, postNumber, pubDate, minutesToRead, status } = Astro.props;
+
+const pillarColor = `var(--pillar-${pillar})`;
+const statusColor =
+  status === "resolved"
+    ? "var(--uptime)"
+    : status === "ongoing"
+      ? "var(--signal)"
+      : "var(--text-dim)";
+
+const number = `#${String(postNumber).padStart(4, "0")}`;
+const isoDate = pubDate.toISOString().slice(0, 10);
+---
+
+<p class="event-strip font-mono text-sm">
+  <span class="pillar" style={`color: ${pillarColor}`}>[ {pillar.toUpperCase()} ]</span>
+  <span class="sep">&middot;</span>
+  <span class="number">{number}</span>
+  <span class="sep">&middot;</span>
+  <span class="reading-time">{minutesToRead} min read</span>
+  <span class="sep">&middot;</span>
+  <time datetime={pubDate.toISOString()}>{isoDate}</time>
+  {
+    status && (
+      <>
+        <span class="sep">&middot;</span>
+        <span>
+          status: <span style={`color: ${statusColor}`}>{status}</span>
+        </span>
+      </>
+    )
+  }
+</p>
+
+<style>
+  .event-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4em;
+    color: var(--text-dim);
+  }
+  .pillar {
+    font-weight: 500;
+  }
+  .sep {
+    color: var(--hairline);
+  }
+</style>

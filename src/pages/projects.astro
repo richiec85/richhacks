@@ -1,0 +1,55 @@
+---
+import Base from "../layouts/Base.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import { getProjects } from "../lib/github";
+
+const projects = await getProjects();
+---
+
+<Base
+  title="Projects"
+  description="Repos pulled live from GitHub across the accounts behind RichHacks — homelab tooling, security scripts, and AI experiments."
+>
+  <section class="projects">
+    <h1>Projects</h1>
+    <p class="intro">
+      Auto-generated at build time from GitHub. Most recently pushed first.
+    </p>
+    {
+      projects.length === 0 && (
+        <p class="empty">
+          No projects to show right now — either the accounts have nothing public yet, or GitHub
+          didn't answer at build time. Check back soon.
+        </p>
+      )
+    }
+    <div class="list">
+      {projects.map((repo) => <ProjectCard repo={repo} />)}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .projects {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+  }
+  .projects h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
+    color: var(--text);
+  }
+  .intro {
+    margin-top: 0.5rem;
+    color: var(--text-dim);
+    max-width: var(--measure);
+  }
+  .empty {
+    margin-top: 2rem;
+    color: var(--text-dim);
+  }
+  .list {
+    margin-top: 1.5rem;
+  }
+</style>

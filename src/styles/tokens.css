@@ -1,0 +1,64 @@
+/* Self-hosted fonts — never hit Google Fonts at runtime. */
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/space-grotesk-variable.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Newsreader";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/fonts/newsreader-variable.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Newsreader";
+  font-style: italic;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/fonts/newsreader-italic-variable.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono-variable.woff2") format("woff2");
+}
+
+:root {
+  --ink: #0b1220; /* dark bg */
+  --surface: #131c2e; /* cards, code */
+  --paper: #f7f6f2; /* light-mode bg */
+  --text: #e6eaf2; /* dark-mode text */
+  --text-dim: #9aa7bd; /* metadata, captions */
+  --signal: #e8912a; /* brand accent - status-LED amber */
+  --link: #3ba9c9; /* dashboard cyan */
+  --uptime: #3fb984; /* status/success ONLY, sparingly */
+  --hairline: #263247; /* borders, rules */
+
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Newsreader", Georgia, serif; /* serif for long-form prose */
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --measure: 68ch; /* max reading width */
+
+  /* Pillar tags in EventStrip need 4 distinct hues, but --uptime is reserved
+     for status:resolved only. homelab/security reuse the two brand accents;
+     ai/performance get dedicated hues pitched at the same saturation/lightness
+     so the strip still reads as one status-LED palette. */
+  --pillar-homelab: var(--signal);
+  --pillar-security: var(--link);
+  --pillar-ai: #8b7fd1;
+  --pillar-performance: #d1728b;
+}
+
+[data-theme="light"] {
+  --ink: var(--paper);
+  --surface: #ffffff;
+  --text: #1a2230;
+  --text-dim: #55607a;
+  --hairline: #e2e0d8;
+}

@@ -1,0 +1,158 @@
+---
+import { Image } from "astro:assets";
+import BaseHead from "../components/BaseHead.astro";
+import avatar from "../assets/richard.jpg";
+import "../styles/global.css";
+
+export interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  type?: "website" | "article";
+  pubDate?: Date;
+  updatedDate?: Date;
+}
+
+const { title, description, image, type, pubDate, updatedDate } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <script is:inline>
+      // Runs before paint so dark-default never flashes light for opted-in readers.
+      const stored = localStorage.getItem("theme");
+      const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+      if (stored === "light" || (stored === null && prefersLight)) {
+        document.documentElement.setAttribute("data-theme", "light");
+      }
+    </script>
+    <BaseHead
+      title={title}
+      description={description}
+      image={image}
+      type={type}
+      pubDate={pubDate}
+      updatedDate={updatedDate}
+    />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <header class="site-header">
+      <nav class="site-nav">
+        <a href="/" class="brand">
+          <Image src={avatar} alt="" role="presentation" width={32} height={32} class="avatar-small" />
+          RichHacks
+        </a>
+        <div class="links">
+          <a href="/posts">Posts</a>
+          <a href="/projects">Projects</a>
+          <a href="/about">About</a>
+          <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
+            &#9788;
+          </button>
+        </div>
+      </nav>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <p>&copy; {new Date().getFullYear()} RichHacks &mdash; notes from the rack.</p>
+    </footer>
+    <script>
+      const toggle = document.getElementById("theme-toggle");
+      toggle?.addEventListener("click", () => {
+        const isLight = document.documentElement.getAttribute("data-theme") === "light";
+        if (isLight) {
+          document.documentElement.removeAttribute("data-theme");
+          localStorage.setItem("theme", "dark");
+        } else {
+          document.documentElement.setAttribute("data-theme", "light");
+          localStorage.setItem("theme", "light");
+        }
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    background: var(--surface);
+    color: var(--text);
+    padding: 0.5rem 1rem;
+    z-index: 100;
+  }
+  .skip-link:focus {
+    left: 0;
+  }
+  .site-header {
+    border-bottom: 1px solid var(--hairline);
+  }
+  .site-nav {
+    max-width: 72rem;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    font-family: var(--font-display);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--text);
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+  .avatar-small {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--hairline);
+  }
+  .links {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .links a {
+    color: var(--text-dim);
+    text-decoration: none;
+  }
+  .links a:hover,
+  .links a:focus-visible {
+    color: var(--link);
+  }
+  #theme-toggle {
+    background: none;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    color: var(--text-dim);
+    line-height: 1;
+    padding: 0.4rem 0.6rem;
+    cursor: pointer;
+  }
+  #theme-toggle:hover,
+  #theme-toggle:focus-visible {
+    color: var(--signal);
+    border-color: var(--signal);
+  }
+  .site-footer {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    color: var(--text-dim);
+    font-size: 0.875rem;
+  }
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+  }
+</style>

@@ -1,0 +1,83 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import EventStrip from "../components/EventStrip.astro";
+import { getReadingTime } from "../lib/reading-time";
+
+const posts = (await getCollection("posts", ({ data }) => !data.draft)).sort(
+  (a, b) => +b.data.pubDate - +a.data.pubDate,
+);
+---
+
+<Base
+  title="RichHacks"
+  description="Field notes on homelab, security and AI from a practitioner's rack."
+>
+  <section class="hero">
+    <h1>RichHacks</h1>
+    <p>Notes from the rack — homelab, security, and AI, written up the way an incident actually happened.</p>
+  </section>
+
+  <section class="feed">
+    {
+      posts.map((post) => (
+        <article class="feed-item">
+          <a href={`/posts/${post.id}/`} class="feed-link">
+            <EventStrip
+              pillar={post.data.pillar}
+              postNumber={post.data.postNumber}
+              pubDate={post.data.pubDate}
+              minutesToRead={getReadingTime(post.body ?? "")}
+              status={post.data.status}
+            />
+            <h2>{post.data.title}</h2>
+          </a>
+        </article>
+      ))
+    }
+  </section>
+</Base>
+
+<style>
+  .hero {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 2rem;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+    color: var(--signal);
+  }
+  .hero p {
+    margin-top: 0.5rem;
+    color: var(--text-dim);
+    max-width: var(--measure);
+  }
+  .feed {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .feed-item {
+    border-top: 1px solid var(--hairline);
+  }
+  .feed-link {
+    display: block;
+    padding: 1.25rem 0;
+    color: inherit;
+    text-decoration: none;
+  }
+  .feed-link h2 {
+    margin-top: 0.5rem;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--text);
+  }
+  .feed-link:hover h2,
+  .feed-link:focus-visible h2 {
+    color: var(--link);
+  }
+</style>

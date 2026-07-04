@@ -1,0 +1,87 @@
+---
+import type { Repo } from "../lib/github";
+
+interface Props {
+  repo: Repo;
+}
+
+const { repo } = Astro.props;
+const pushedDate = new Date(repo.pushedAt).toISOString().slice(0, 10);
+---
+
+<article class="project-card">
+  <p class="meta font-mono text-sm">
+    <span class="account">[ {repo.account.toUpperCase()} ]</span>
+    <span class="sep">&middot;</span>
+    <span>{repo.language ?? "—"}</span>
+    <span class="sep">&middot;</span>
+    <span>pushed {pushedDate}</span>
+    <span class="sep">&middot;</span>
+    <span>&#9733; {repo.stars}</span>
+  </p>
+  <h2><a href={repo.url} target="_blank" rel="noopener noreferrer">{repo.name}</a></h2>
+  {repo.description && <p class="description">{repo.description}</p>}
+  {
+    repo.topics.length > 0 && (
+      <ul class="topics">
+        {repo.topics.map((topic) => (
+          <li>{topic}</li>
+        ))}
+      </ul>
+    )
+  }
+</article>
+
+<style>
+  .project-card {
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--hairline);
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em;
+    color: var(--text-dim);
+  }
+  .account {
+    color: var(--signal);
+    font-weight: 500;
+  }
+  .sep {
+    color: var(--hairline);
+  }
+  h2 {
+    margin-top: 0.5rem;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+  }
+  h2 a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  h2 a:hover,
+  h2 a:focus-visible {
+    color: var(--link);
+  }
+  .description {
+    margin-top: 0.4rem;
+    color: var(--text-dim);
+    max-width: var(--measure);
+  }
+  .topics {
+    margin-top: 0.6rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+  .topics li {
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    padding: 0.15rem 0.6rem;
+    color: var(--text-dim);
+  }
+</style>

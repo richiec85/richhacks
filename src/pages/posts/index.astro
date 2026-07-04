@@ -1,0 +1,77 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import EventStrip from "../../components/EventStrip.astro";
+import { getReadingTime } from "../../lib/reading-time";
+
+const posts = (await getCollection("posts", ({ data }) => !data.draft)).sort(
+  (a, b) => +b.data.pubDate - +a.data.pubDate,
+);
+---
+
+<Base title="Posts" description="Every RichHacks post, most recent first.">
+  <section class="posts-index">
+    <h1>Posts</h1>
+    <div class="feed">
+      {
+        posts.map((post) => (
+          <article class="feed-item">
+            <a href={`/posts/${post.id}/`} class="feed-link">
+              <EventStrip
+                pillar={post.data.pillar}
+                postNumber={post.data.postNumber}
+                pubDate={post.data.pubDate}
+                minutesToRead={getReadingTime(post.body ?? "")}
+                status={post.data.status}
+              />
+              <h2>{post.data.title}</h2>
+              <p>{post.data.description}</p>
+            </a>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .posts-index {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+  }
+  .posts-index h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
+    color: var(--text);
+  }
+  .feed {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .feed-item {
+    border-top: 1px solid var(--hairline);
+  }
+  .feed-link {
+    display: block;
+    padding: 1.25rem 0;
+    color: inherit;
+    text-decoration: none;
+  }
+  .feed-link h2 {
+    margin-top: 0.5rem;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--text);
+  }
+  .feed-link p {
+    margin-top: 0.4rem;
+    color: var(--text-dim);
+    max-width: var(--measure);
+  }
+  .feed-link:hover h2,
+  .feed-link:focus-visible h2 {
+    color: var(--link);
+  }
+</style>

@@ -7,6 +7,7 @@ Paste this into Claude Code (in Zed) as the project brief. It's written to be ex
 ## Mission
 
 Build **RichHacks** — a fast, content-first personal blog for a cybersecurity/homelab practitioner. Dark-mode default, MDX posts, an auto-generated projects page sourced from multiple GitHub accounts, first-class SEO, deployed to Cloudflare Pages on `richhacks.blog`.
+<!---->
 
 ## Stack (use latest stable versions; pin them in package.json)
 
@@ -58,38 +59,41 @@ richhacks/
 
 ```css
 :root {
-  --ink:      #0B1220;   /* dark bg */
-  --surface:  #131C2E;   /* cards, code */
-  --paper:    #F7F6F2;   /* light-mode bg */
-  --text:     #E6EAF2;   /* dark-mode text */
-  --text-dim: #9AA7BD;   /* metadata, captions */
-  --signal:   #E8912A;   /* brand accent - status-LED amber */
-  --link:     #3BA9C9;   /* dashboard cyan */
-  --uptime:   #3FB984;   /* status/success ONLY, sparingly */
-  --hairline: #263247;   /* borders, rules */
+  --ink: #0b1220; /* dark bg */
+  --surface: #131c2e; /* cards, code */
+  --paper: #f7f6f2; /* light-mode bg */
+  --text: #e6eaf2; /* dark-mode text */
+  --text-dim: #9aa7bd; /* metadata, captions */
+  --signal: #e8912a; /* brand accent - status-LED amber */
+  --link: #3ba9c9; /* dashboard cyan */
+  --uptime: #3fb984; /* status/success ONLY, sparingly */
+  --hairline: #263247; /* borders, rules */
 
   --font-display: "Space Grotesk", system-ui, sans-serif;
-  --font-body:    "Newsreader", Georgia, serif;   /* serif for long-form prose */
-  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --font-body: "Newsreader", Georgia, serif; /* serif for long-form prose */
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --measure: 68ch;       /* max reading width */
+  --measure: 68ch; /* max reading width */
 }
 [data-theme="light"] {
   --ink: var(--paper);
-  --surface: #FFFFFF;
-  --text: #1A2230;
-  --text-dim: #55607A;
-  --hairline: #E2E0D8;
+  --surface: #ffffff;
+  --text: #1a2230;
+  --text-dim: #55607a;
+  --hairline: #e2e0d8;
 }
 ```
+
 Self-host all three fonts from `/public/fonts` (don't hit Google Fonts at runtime — faster and GDPR-cleaner). Dark mode is the default; provide a toggle that respects `prefers-color-scheme` and remembers choice.
 
 ## Signature component — `EventStrip.astro`
 
 Renders post metadata like a monitoring/changelog event, in mono:
+
 ```
 [ HOMELAB ]  #0042  ·  12 min read  ·  2026-07-01  ·  status: resolved
 ```
+
 - Category in brackets, coloured by pillar.
 - Sequential post number (`#0042`) from frontmatter.
 - Reading time (compute from content).
@@ -107,11 +111,11 @@ const posts = defineCollection({
   type: "content",
   schema: z.object({
     title: z.string(),
-    description: z.string(),          // used for SEO + OG
+    description: z.string(), // used for SEO + OG
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     pillar: z.enum(["homelab", "security", "ai", "performance"]),
-    postNumber: z.number(),           // for the #0042 strip
+    postNumber: z.number(), // for the #0042 strip
     status: z.enum(["resolved", "ongoing", "reference"]).optional(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
@@ -127,16 +131,25 @@ export const collections = { posts };
 ```ts
 // Reads GITHUB_USERS (comma-separated) and GITHUB_TOKEN from env.
 // Merges public (and, if token has repo scope, private) repos across all accounts.
-const USERS = (import.meta.env.GITHUB_USERS ?? "").split(",").map(s => s.trim()).filter(Boolean);
+const USERS = (import.meta.env.GITHUB_USERS ?? "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
 const TOKEN = import.meta.env.GITHUB_TOKEN;
 
 export type Repo = {
-  name: string; description: string | null; language: string | null;
-  stars: number; url: string; pushedAt: string; topics: string[]; account: string;
+  name: string;
+  description: string | null;
+  language: string | null;
+  stars: number;
+  url: string;
+  pushedAt: string;
+  topics: string[];
+  account: string;
 };
 
 export async function getProjects(): Promise<Repo[]> {
-  const headers: Record<string,string> = {
+  const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
   };
@@ -149,7 +162,7 @@ export async function getProjects(): Promise<Repo[]> {
       // /users/{user}/repos for the public list of other accounts.
       const res = await fetch(
         `https://api.github.com/users/${user}/repos?per_page=100&sort=pushed`,
-        { headers }
+        { headers },
       );
       if (!res.ok) continue;
       const repos = await res.json();
@@ -158,25 +171,39 @@ export async function getProjects(): Promise<Repo[]> {
         // Optional: only surface repos tagged with the "blog-featured" topic:
         // if (!(r.topics ?? []).includes("blog-featured")) continue;
         all.push({
-          name: r.name, description: r.description, language: r.language,
-          stars: r.stargazers_count, url: r.html_url, pushedAt: r.pushed_at,
-          topics: r.topics ?? [], account: user,
+          name: r.name,
+          description: r.description,
+          language: r.language,
+          stars: r.stargazers_count,
+          url: r.html_url,
+          pushedAt: r.pushed_at,
+          topics: r.topics ?? [],
+          account: user,
         });
       }
-    } catch { /* fall through - never fail the build on GitHub */ }
+    } catch {
+      /* fall through - never fail the build on GitHub */
+    }
   }
   // Sort most-recently-worked-on first; de-dupe by name+account.
   const seen = new Set<string>();
   return all
-    .filter(r => (seen.has(r.account+"/"+r.name) ? false : seen.add(r.account+"/"+r.name)))
-    .sort((a,b) => +new Date(b.pushedAt) - +new Date(a.pushedAt));
+    .filter((r) =>
+      seen.has(r.account + "/" + r.name)
+        ? false
+        : seen.add(r.account + "/" + r.name),
+    )
+    .sort((a, b) => +new Date(b.pushedAt) - +new Date(a.pushedAt));
 }
 ```
+
 `.env.example`:
+
 ```
 GITHUB_USERS=richiec85,SECOND_ACCOUNT,THIRD_ACCOUNT
 GITHUB_TOKEN=            # classic PAT, read-only. public_repo scope, or repo scope to include private
 ```
+
 Set the same two vars in **Cloudflare Pages → Settings → Environment variables** so production builds can fetch. Add a build-output cache of the last good result so a rate-limit never breaks a deploy.
 
 ## SEO requirements (build these in from day one)
@@ -227,4 +254,3 @@ Responsive to 360px; visible keyboard focus rings; `prefers-reduced-motion` resp
 ---
 
 **Two things to hand Claude Code alongside this brief:** (1) your other two GitHub usernames, and (2) your existing Proxmox write-up to convert into the first post. Everything else it can generate from the above.
-

@@ -1,6 +1,6 @@
 ---
 title: "How One NIC Took Down My Entire Proxmox Cluster"
-description: "A single network card triggered a three-way outage across networking, corosync and ZFS on my two-node Proxmox cluster. Here's the full post-mortem — and the permanent fix so interface names never drift again."
+description: "No network after adding a NIC, corosync loses quorum, ZFS pool won't import on boot — the full Proxmox post-mortem and the permanent fix."
 pubDate: 2026-07-01
 pillar: "homelab"
 postNumber: 1

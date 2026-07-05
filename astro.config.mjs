@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 
 import sitemap from '@astrojs/sitemap';
+import cspHeaders from './integrations/csp-headers.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -20,5 +21,5 @@ export default defineConfig({
     }
   },
 
-  integrations: [mdx(), sitemap()]
+  integrations: [mdx(), sitemap(), cspHeaders()]
 });

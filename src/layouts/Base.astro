@@ -18,14 +18,10 @@ const { title, description, image, type, pubDate, updatedDate } = Astro.props;
 
 <html lang="en">
   <head>
-    <script is:inline>
-      // Runs before paint so dark-default never flashes light for opted-in readers.
-      const stored = localStorage.getItem("theme");
-      const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
-      if (stored === "light" || (stored === null && prefersLight)) {
-        document.documentElement.setAttribute("data-theme", "light");
-      }
-    </script>
+    {/* is:inline runs before paint so dark-default never flashes light for
+        opted-in readers — Astro's build pipeline (and its minifier) skips
+        is:inline scripts by design, so this is hand-minified. */}
+    <script is:inline>(function(){var s=localStorage.getItem("theme"),l=window.matchMedia("(prefers-color-scheme: light)").matches;if(s==="light"||(s===null&&l))document.documentElement.setAttribute("data-theme","light")})();</script>
     <BaseHead
       title={title}
       description={description}
@@ -97,6 +93,8 @@ const { title, description, image, type, pubDate, updatedDate } = Astro.props;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
     padding: 1rem 1.5rem;
     font-family: var(--font-display);
   }
@@ -104,6 +102,7 @@ const { title, description, image, type, pubDate, updatedDate } = Astro.props;
     display: flex;
     align-items: center;
     gap: 0.6rem;
+    flex-shrink: 0;
     color: var(--text);
     font-weight: 600;
     text-decoration: none;
@@ -112,6 +111,7 @@ const { title, description, image, type, pubDate, updatedDate } = Astro.props;
   .avatar-small {
     width: 32px;
     height: 32px;
+    flex-shrink: 0;
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid var(--hairline);
@@ -119,9 +119,14 @@ const { title, description, image, type, pubDate, updatedDate } = Astro.props;
   .links {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
   }
   .links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0.25rem 0;
     color: var(--text-dim);
     text-decoration: none;
   }
@@ -135,6 +140,8 @@ const { title, description, image, type, pubDate, updatedDate } = Astro.props;
     border-radius: 999px;
     color: var(--text-dim);
     line-height: 1;
+    min-width: 44px;
+    min-height: 44px;
     padding: 0.4rem 0.6rem;
     cursor: pointer;
   }

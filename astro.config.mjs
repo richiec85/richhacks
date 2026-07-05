@@ -11,7 +11,13 @@ export default defineConfig({
   site: 'https://richhacks.blog',
 
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    build: {
+      // Explicit, not just relying on Vite's default — esbuild minifies JS,
+      // and cssMinify covers the compiled Tailwind bundle.
+      minify: 'esbuild',
+      cssMinify: true
+    }
   },
 
   integrations: [mdx(), sitemap()]

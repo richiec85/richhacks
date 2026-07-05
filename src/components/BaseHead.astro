@@ -1,7 +1,4 @@
 ---
-import { getImage } from "astro:assets";
-import avatar from "../assets/richard.jpg";
-
 export interface Props {
   title: string;
   description: string;
@@ -20,18 +17,13 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 // the site-wide default OG card so every page — post or not — always has one.
 const ogImageURL = new URL(image ?? "/og-default.png", Astro.site);
 
-// authorAvatar.src is a dev-only `/_image?href=...` endpoint in `astro dev`
-// and a real hashed `/_astro/*.webp` file in a static build — resolve against
-// the current request origin (Astro.url), not the prod `site` config, so the
-// URL is valid in whichever environment actually served it.
-const authorAvatar = await getImage({ src: avatar, width: 256, height: 256 });
-const authorImageURL = new URL(authorAvatar.src, Astro.url).toString();
+// No `image` here deliberately — the site avatar is AI-generated (disclosed
+// on /about), so it doesn't belong on Person as if it were a photo of the author.
 const authorURL = new URL("/about", Astro.site).toString();
 const authorSchema = {
   "@type": "Person",
   name: author,
   url: authorURL,
-  image: authorImageURL,
 };
 
 const jsonLd =

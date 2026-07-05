@@ -6,25 +6,11 @@
 // client), so it reads both import.meta.env and process.env and prefers
 // whichever is actually set — CI platforms don't all surface dashboard-set
 // env vars to Vite's import.meta.env the same way a local .env file does.
-const rawUsers = import.meta.env.GITHUB_USERS ?? process.env.GITHUB_USERS ?? "";
-const rawToken = import.meta.env.GITHUB_TOKEN ?? process.env.GITHUB_TOKEN;
-
-console.log("[github.ts debug] import.meta.env.GITHUB_USERS:", import.meta.env.GITHUB_USERS);
-console.log("[github.ts debug] process.env.GITHUB_USERS:", process.env.GITHUB_USERS);
-console.log(
-  "[github.ts debug] import.meta.env.GITHUB_TOKEN present:",
-  !!import.meta.env.GITHUB_TOKEN,
-);
-console.log("[github.ts debug] process.env.GITHUB_TOKEN present:", !!process.env.GITHUB_TOKEN);
-
-const USERS = rawUsers
+const USERS = (import.meta.env.GITHUB_USERS ?? process.env.GITHUB_USERS ?? "")
   .split(",")
   .map((s) => s.trim())
   .filter(Boolean);
-const TOKEN = rawToken;
-
-console.log("[github.ts debug] resolved USERS:", USERS);
-console.log("[github.ts debug] resolved TOKEN present:", !!TOKEN);
+const TOKEN = import.meta.env.GITHUB_TOKEN ?? process.env.GITHUB_TOKEN;
 
 export type Repo = {
   name: string;
@@ -46,17 +32,13 @@ export async function getProjects(): Promise<Repo[]> {
 
   const all: Repo[] = [];
   for (const user of USERS) {
-    const url = `https://api.github.com/users/${user}/repos?per_page=100&sort=pushed`;
-    console.log("[github.ts debug] requesting:", url);
     try {
-      const res = await fetch(url, { headers });
-      console.log("[github.ts debug]", user, "status:", res.status, res.statusText);
-      if (!res.ok) {
-        console.log("[github.ts debug]", user, "body:", await res.text());
-        continue;
-      }
+      const res = await fetch(
+        `https://api.github.com/users/${user}/repos?per_page=100&sort=pushed`,
+        { headers },
+      );
+      if (!res.ok) continue;
       const repos = await res.json();
-      console.log("[github.ts debug]", user, "repos returned:", repos.length);
       for (const r of repos) {
         if (r.fork || r.archived) continue;
         all.push({
@@ -70,19 +52,15 @@ export async function getProjects(): Promise<Repo[]> {
           account: user,
         });
       }
-    } catch (err) {
-      console.log("[github.ts debug]", user, "fetch threw:", err);
+    } catch {
       /* fall through - never fail the build on GitHub */
     }
   }
-  console.log("[github.ts debug] total repos before dedupe:", all.length);
   // Sort most-recently-worked-on first; de-dupe by name+account.
   const seen = new Set<string>();
-  const result = all
+  return all
     .filter((r) =>
       seen.has(r.account + "/" + r.name) ? false : seen.add(r.account + "/" + r.name),
     )
     .sort((a, b) => +new Date(b.pushedAt) - +new Date(a.pushedAt));
-  console.log("[github.ts debug] final result count:", result.length);
-  return result;
 }

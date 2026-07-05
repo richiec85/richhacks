@@ -16,7 +16,9 @@ const { title, description, image, type = "website", pubDate, updatedDate } = As
 const siteName = "RichHacks";
 const author = "Richard Carragher";
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const ogImageURL = image ? new URL(image, Astro.site) : undefined;
+// Prefer a per-post hero (frontmatter `hero`) if set; otherwise fall back to
+// the site-wide default OG card so every page — post or not — always has one.
+const ogImageURL = new URL(image ?? "/og-default.png", Astro.site);
 
 // authorAvatar.src is a dev-only `/_image?href=...` endpoint in `astro dev`
 // and a real hashed `/_astro/*.webp` file in a static build — resolve against
@@ -24,7 +26,13 @@ const ogImageURL = image ? new URL(image, Astro.site) : undefined;
 // URL is valid in whichever environment actually served it.
 const authorAvatar = await getImage({ src: avatar, width: 256, height: 256 });
 const authorImageURL = new URL(authorAvatar.src, Astro.url).toString();
-const authorSchema = { "@type": "Person", name: author, image: authorImageURL };
+const authorURL = new URL("/about", Astro.site).toString();
+const authorSchema = {
+  "@type": "Person",
+  name: author,
+  url: authorURL,
+  image: authorImageURL,
+};
 
 const jsonLd =
   type === "article"
@@ -33,12 +41,12 @@ const jsonLd =
         "@type": "BlogPosting",
         headline: title,
         description,
+        image: ogImageURL.toString(),
         datePublished: pubDate?.toISOString(),
         dateModified: (updatedDate ?? pubDate)?.toISOString(),
         author: authorSchema,
         publisher: { "@type": "Organization", name: siteName },
         mainEntityOfPage: canonicalURL.toString(),
-        ...(ogImageURL && { image: ogImageURL.toString() }),
       }
     : {
         "@context": "https://schema.org",
@@ -69,12 +77,12 @@ const jsonLd =
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonicalURL} />
-{ogImageURL && <meta property="og:image" content={ogImageURL} />}
+<meta property="og:image" content={ogImageURL} />
 
 <!-- Twitter -->
-<meta name="twitter:card" content={ogImageURL ? "summary_large_image" : "summary"} />
+<meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
-{ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
+<meta name="twitter:image" content={ogImageURL} />
 
 <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

@@ -1,5 +1,4 @@
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-tLg+W/bkbYY+92ZUDJe5Nys7HHMdby+Z33OCUHLFxmY=' 'sha256-z028qKBFyvtOu0UgZwODiond97gepgAaXbC15r6nWek='; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY

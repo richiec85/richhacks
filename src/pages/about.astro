@@ -9,7 +9,8 @@ import avatar from "../assets/richard.jpg";
   description="Richard Carragher — 30+ years in IT and cybersecurity, writing up homelab, security and AI practice from the rack."
 >
   <section class="about">
-    <Image src={avatar} alt="Richard Carragher" width={120} height={120} class="avatar-large" />
+    <Image src={avatar} alt="RichHacks avatar" width={120} height={120} class="avatar-large" />
+    <p class="avatar-note">The avatar above is AI-generated, not a photograph.</p>
     <h1>About</h1>
     <p>
       I'm Richard — 30+ years in IT and cybersecurity, currently running a homelab that
@@ -31,6 +32,12 @@ import avatar from "../assets/richard.jpg";
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid var(--hairline);
+  }
+  .avatar-note {
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
   }
   .about h1 {
     margin-top: 1.5rem;

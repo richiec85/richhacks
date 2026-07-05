@@ -80,11 +80,14 @@ decorative branding, not a photo of the author.
 
 ## Security headers
 
-`public/_headers` sets CSP, HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy and
-Permissions-Policy for Cloudflare Pages. The CSP's `script-src` allows `'self'` plus SHA-256
-hashes for the two inline scripts (dark-mode-flash prevention and the theme toggle) — if you edit
-either script in `src/layouts/Base.astro`, you'll need to recompute and update those hashes or the
-CSP will silently block them.
+`public/_headers` sets HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy and
+Permissions-Policy for Cloudflare Pages. The Content-Security-Policy line is deliberately **not**
+in that file — Astro inlines two small scripts directly into every page (dark-mode-flash
+prevention and the theme toggle), and a strict CSP has to allowlist them by exact SHA-256 hash.
+Hand-maintaining that hash would silently break the site the moment either script changed, so
+`integrations/csp-headers.mjs` computes it from the real build output and injects the CSP line
+into `dist/_headers` on every `pnpm build` — the hash can't go stale because it's never
+hand-written.
 
 ## Deployment
 

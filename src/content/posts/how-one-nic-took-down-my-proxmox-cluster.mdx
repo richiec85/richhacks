@@ -15,6 +15,14 @@ Last month I did something completely routine. I shut one node down, slotted in 
 
 The node came back with **no network, no cluster quorum, and no storage.** Three separate subsystems fell over from one hardware change, and each failure was hiding the next one behind it. This is the write-up I wish I'd found while I was staring at a dead console at 11pm.
 
+> **Update (July 2026):** Proxmox VE 9 shipped a built-in tool, `pve-network-interface-pinning`, that automates the permanent fix in Step 3 below — one command generates the same MAC-pinned `.link` file and updates `/etc/network/interfaces` for you:
+>
+> ```bash
+> pve-network-interface-pinning generate --interface enp1s0 --target-name cluster0
+> ```
+>
+> If you're on PVE9+, that's the fast path. I've left the manual method below as-is, because it's exactly what that tool is doing under the hood, and it's still the right approach if you're on an older version or just want to understand the mechanism rather than trust a script.
+
 ## The thirty-second version
 
 Adding a PCIe NIC reshuffled the PCI bus. That renamed my onboard interface. Because Proxmox's network config points at interfaces *by name*, the node booted with its cluster IP living on an interface that no longer existed. No IP meant **corosync** couldn't join the ring, so the cluster lost quorum. And a stale ZFS cache file meant the data pool didn't auto-import, so nothing that lived on it would start.

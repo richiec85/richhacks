@@ -1,0 +1,69 @@
+---
+title: "Zero Trust Is Not a Product You Can Buy"
+description: "Vendors will sell you a Zero Trust box. That's not what Zero Trust is. Part 1 of a series stripping the marketing off ZTA — what it actually means, and why most of what you've been told is wrong."
+pubDate: 2026-07-08
+pillar: "security"
+postNumber: 2
+status: "ongoing"
+tags: ["zero-trust", "zta", "nis2", "cybersecurity", "msp", "iso27001", "security-architecture"]
+draft: false
+---
+
+{/*
+  SERIES NOTE (safe to leave or delete): this is Part 1 of a planned Zero Trust series.
+  Later parts referenced at the end — swap in real links/titles as you publish them.
+*/}
+
+There's a stand at every security conference selling Zero Trust. It's usually a box, or a dashboard, or a per-seat licence, and the pitch is always some version of: *"deploy this and you'll be Zero Trust by Friday."*
+
+I spent the better part of a master's dissertation on Zero Trust Architecture, and I can tell you the single most important thing about that pitch up front: **it's selling you something that, by definition, cannot be bought.** Zero Trust is not a product. It's not a device, a subscription, or a checkbox. Treating it as one is the most common, and most expensive, mistake organisations make, and the vendors selling the boxes have every reason not to correct you.
+
+This is Part 1 of a short series pulling the marketing off Zero Trust and looking at what's underneath. I'm starting with what it *isn't*, because you can't implement the real thing while you're still holding onto the fake one.
+
+## Where the idea actually comes from
+
+Zero Trust didn't start as a product category. The term was popularised by John Kindervag at Forrester around 2010, and the substance was later formalised by NIST in **Special Publication 800-207** which, crucially, is an *architecture* document, not a shopping list. It describes a set of principles for how you make access decisions. It does not tell you to buy anything.
+
+The core idea is almost embarrassingly simple to state: **stop trusting things just because of where they are on the network.** The old model was a hard perimeter with a soft, trusting interior, get past the firewall and you were treated as friendly. Zero Trust throws that out. Every request to access a resource is treated as though it originates from an untrusted network, and is verified on its own merits, every time, regardless of whether it came from inside the office or a café in another country.
+
+That's the whole philosophy. Everything else is implementation detail — and implementation detail is where the vendors move in and start selling.
+
+## What Zero Trust is *not*
+
+Here's what gets sold as Zero Trust that isn't:
+
+**It's not a VPN — even a "Zero Trust" VPN.** A traditional VPN is almost the opposite of Zero Trust: authenticate once at the edge, and you're dropped onto the network with broad implicit trust. Slapping "ZTNA" on the product doesn't change the model unless it's actually enforcing per-request, per-resource verification. Some do; many just rebrand the same tunnel.
+
+**It's not a single product or vendor platform.** No one box sits between you and Zero Trust. Real ZTA touches identity, device posture, network segmentation, application access, logging, and policy — spanning tools you probably already own. A vendor claiming their platform *is* your Zero Trust is describing one component and charging for the whole.
+
+**It's not "we turned on MFA."** MFA is a genuinely important building block — strong identity verification is foundational. But authentication is one input to an access decision, not the decision itself. Zero Trust asks *who are you, on what device, in what state, requesting what, in what context* — and re-asks continuously. MFA answers the first part, once.
+
+**It's not a project you finish.** There's no "we did Zero Trust last quarter." It's a posture you move toward and maintain, not a milestone you clear. The status on this very post is `ongoing` for a reason.
+
+**It's not all-or-nothing, and it's not just for enterprises.** The myth that it requires a rip-and-replace of your entire stack keeps smaller organisations from starting at all. You adopt it incrementally, protecting your most important resources first. A two-person MSP can apply Zero Trust principles as legitimately as a bank — at a different scale, with the same logic.
+
+## Why the myth is expensive
+
+This isn't pedantry. Believing the product myth costs you in concrete ways.
+
+You buy the box, tick the "Zero Trust" line on your security posture, and stop, while every principle that actually reduces risk goes unimplemented. You've spent money to feel secure without *being* more secure, which is arguably worse than doing nothing, because now there's a false sense of coverage. And when a framework like **NIS2** or an ISO 27001 assessor comes asking how you control access to essential services, "we bought a Zero Trust appliance" is not an answer. They want to see the architecture and the decisions, not the invoice.
+
+The vendors aren't necessarily lying, their tools are often genuinely useful *components*. The distortion is in the framing: a component sold as the whole. Once you see Zero Trust as an architecture you assemble and operate, the market stops being a shortcut and becomes what it should be — a parts bin.
+
+## The one-line version
+
+If you take nothing else from Part 1: **Zero Trust is a set of principles for never granting access based on location or prior trust — verified continuously, per request. It is something you *do*, not something you *own*.**
+
+Hold onto that, because it's the lens for everything that follows.
+
+## What's coming in this series
+
+Now that the myth's out of the way, the rest gets practical:
+
+- **Part 2 — The principles, in plain English.** What NIST SP 800-207 actually says, translated out of standards-speak into decisions you can make.
+- **Part 3 — Zero Trust for a small MSP.** What I'd genuinely implement first on a small, multi-tenant setup — and the order I'd do it in, on a real budget.
+- **Part 4 — Where NIS2 and ISO 27001 fit.** How the architecture maps to what assessors and the directive actually require, so the security work and the compliance work are the same work.
+
+I'll be building these from the ground I covered in my MSc research, but aimed squarely at people who have to *run* this stuff, not just cite it.
+
+If you've been sold a Zero Trust box, don't feel daft — the pitch is good and it's everywhere. Just know that the box was never the point. The architecture is. We'll build it, piece by piece, from here.
